@@ -1,1 +1,2 @@
-# Tokyo-Airbnb-Project
+# 도쿄 에어비엔비 숙소 추천 프로젝트
+<img src="[https://www.dailylog.co.kr/news/photo/201204/3888_1733_4612.jpg](https://i.namu.wiki/i/W7DfkgMCR-NkhKTuOPf8nf_FH6zUI4EmCk7eVENyENcDrjLMZHTIgEPbddmtPPtMUftrsZa4QQembqVgKj07K0ETwxvM2zrH6vYwPfM1t4gkUU-6VThBZLKWMXBDMGTDwUeBZcKegV9aUaX1--xGLw.svg)https://i.namu.wiki/i/W7DfkgMCR-NkhKTuOPf8nf_FH6zUI4EmCk7eVENyENcDrjLMZHTIgEPbddmtPPtMUftrsZa4QQembqVgKj07K0ETwxvM2zrH6vYwPfM1t4gkUU-6VThBZLKWMXBDMGTDwUeBZcKegV9aUaX1--xGLw.svg" width="700" height="370" div align="center">
