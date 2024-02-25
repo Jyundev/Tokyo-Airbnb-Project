@@ -11,7 +11,12 @@ import pandas as pd
 
 def get_optionurl(checkin_date, checkout_date, adultnum, childnum):
     """
-    체크인, 체크아웃, 성인(만 18세 이상), 어린이(만 18세 미만) 인원 수에 따라 숙소 정보 변동
+    체크인, 체크아웃, 성인(만 18세 이상), 어린이(만 18세 미만) 인원 수에 따른 숙소 정보 수집
+
+    input : 체크인 날짜, 체크아웃 날짜, 성인 수, 어린이 수
+    output : 숙소 정보(숙소 한국어명, 숙소 영어명, 숙소 주소, 숙소 가격)
+    author : 이지은
+    updated date : 240225
     """
     child_age_list = []
 
