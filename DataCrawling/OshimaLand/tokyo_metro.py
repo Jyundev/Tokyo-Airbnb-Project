@@ -5,6 +5,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 
 import time
+import pickle
 
 # TODO : 도쿄 지하철(도쿄 메트로) 수집
 
@@ -74,7 +75,25 @@ def get_line_detail(browser, metro_link):
     return line_detail_dict
 
 
+    """
+    딕셔너리 데이터 저장, 불러오는 함수 
+    """
+
+def save_dict(data, file_name):
+
+    with open(file_name, 'wb') as f:
+        pickle.dump(data, f)
+
+
+def open_dict(file_name):
+    with open(file_name, 'rb') as f:
+        dictionary = pickle.load(f)
+    return dictionary
+
+
 url = "https://www.tokyometro.jp/en/subwaymap/index.html"
 browser = load_page(url)
 line_detail = get_content(browser)
-line_detail
+
+save_dict(line_detail, 'DataCrawling/OshimaLand/line_detail.pkl')
+
