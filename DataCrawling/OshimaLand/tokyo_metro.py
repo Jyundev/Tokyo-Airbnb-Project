@@ -5,7 +5,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from googletrans import Translator
 
-
+import requests
 import time
 import pickle
 
@@ -76,13 +76,7 @@ def get_line_detail(browser, metro_link):
 
     return line_detail_dict
 
-
-    """
-    딕셔너리 데이터 저장, 불러오는 함수 
-    """
-
 def save_dict(data, file_name):
-
     with open(file_name, 'wb') as f:
         pickle.dump(data, f)
 
@@ -93,22 +87,9 @@ def open_dict(file_name):
     return dictionary
 
 
-def translate_jp_to_kr( data : dict, file_name):
-    translator = Translator()
-
-    for key, value in data.items():
-        tokyo_kr_list = list(map(lambda line: translator.translate(line, src='ko', dest='ja'),value))
-        data[key] = tokyo_kr_list
-
-    save_dict(data, file_name)
-
-
-import time
-import requests
-
 def papago_translate(text, client_id, client_seceret):
     """
-    PAPAGO API  이용 영어 노선도 한국어로 번역 
+    PAPAGO API 이용 영어 노선도 한국어로 번역 
 
     input : taget(지하철 역),  client_id, client_seceret
     output : 한국어 노선도 
@@ -153,8 +134,6 @@ def translate_kr(data):
         data[key] = tokyo_kr_list
 
     save_dict(data, 'DataCrawling/OshimaLand/line_detail_kr.pkl')
-
-
 
 
 url = "https://www.tokyometro.jp/en/subwaymap/index.html"
