@@ -1,3 +1,5 @@
+import pip
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -10,6 +12,34 @@ import pickle
 
 client_id = 'J_XnOAIntLYZe_U6aFoM'
 client_seceret = 'npkah271Cr'
+
+
+def install(package, upgrade=True):
+    """
+    페키지 설치
+    author : 장윤영
+    updated date : 240226
+
+    """
+    
+    if hasattr(pip, 'main'):
+        if upgrade:
+            pip.main(['install', '--upgrade', package])
+        else:
+            pip.main(['install', package])
+    else:
+        if upgrade:
+            pip._internal.main(['install', '--upgrade', package])
+        else:
+            pip._internal.main(['install', package])
+
+        # import package
+        try:
+            eval(f"import {package}")
+        except ModuleNotFoundError:
+            print("# Package name might be differnt. please check it again.")
+        except Exception as e:
+            print(e)
 
 def load_page(url):
     """
@@ -149,6 +179,9 @@ def translate_kr(data):
     save_dict(data, "DataCrawling/OshimaLand/line_detail_kr.pkl")
 
 if __name__ == "__main__":
+    install("selenium")
+    install("requests")
+
     url = "https://www.tokyometro.jp/en/subwaymap/index.html"
     browser = load_page(url)
     line_detail = get_content(browser)
