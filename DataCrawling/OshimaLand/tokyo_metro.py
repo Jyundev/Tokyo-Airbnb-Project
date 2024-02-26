@@ -119,12 +119,7 @@ def papago_translate(text, client_id, client_seceret):
 
     url = "https://openapi.naver.com/v1/papago/n2mt"
 
-<<<<<<< HEAD
     header = {"X-Naver-Client-Id": client_id, "X-Naver-Client-Secret": client_secret}
-=======
-    header = {"X-Naver-Client-Id":client_id,
-            "X-Naver-Client-Secret":client_seceret}
->>>>>>> e47137e (오타 수정)
 
     response = requests.post(url, headers=header, data=data)
     rescode = response.status_code
