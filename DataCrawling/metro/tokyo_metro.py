@@ -1,7 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
-from googletrans import Translator
 
 import requests
 import time
@@ -9,6 +8,8 @@ import pickle
 
 # TODO : 도쿄 지하철(도쿄 메트로) 수집
 
+client_id = 'J_XnOAIntLYZe_U6aFoM'
+client_seceret = 'npkah271Cr'
 
 def load_page(url):
     """
@@ -93,7 +94,7 @@ def open_dict(file_name):
     return dictionary
 
 
-def papago_translate(text, client_id, client_seceret):
+def papago_translate(text):
     """
     PAPAGO API 이용 영어 노선도 한국어로 번역
 
@@ -104,8 +105,9 @@ def papago_translate(text, client_id, client_seceret):
 
 
     """
-    client_id = client_id
-    client_secret = client_seceret
+    
+    global client_id
+    global client_seceret
 
     a = "error"
     b = "error"
@@ -119,7 +121,7 @@ def papago_translate(text, client_id, client_seceret):
 
     url = "https://openapi.naver.com/v1/papago/n2mt"
 
-    header = {"X-Naver-Client-Id": client_id, "X-Naver-Client-Secret": client_secret}
+    header = {"X-Naver-Client-Id": client_id, "X-Naver-Client-Secret": client_seceret}
 
     response = requests.post(url, headers=header, data=data)
     rescode = response.status_code
@@ -146,10 +148,10 @@ def translate_kr(data):
 
     save_dict(data, "DataCrawling/OshimaLand/line_detail_kr.pkl")
 
+if __name__ == "__main__":
+    url = "https://www.tokyometro.jp/en/subwaymap/index.html"
+    browser = load_page(url)
+    line_detail = get_content(browser)
 
-url = "https://www.tokyometro.jp/en/subwaymap/index.html"
-browser = load_page(url)
-line_detail = get_content(browser)
-
-file_name = "DataCrawling/OshimaLand/line_detail_kr.pkl"
-translate_kr(line_detail, file_name)
+    file_name = "DataCrawling/data/line_detail_kr.pkl"
+    translate_kr(line_detail, file_name)
