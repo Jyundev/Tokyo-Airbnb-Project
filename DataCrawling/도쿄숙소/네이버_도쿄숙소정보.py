@@ -9,6 +9,9 @@ from sqlalchemy import create_engine, Column, Integer, String, Date
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
+import random
+from datetime import date, timedelta
+
 engine = create_engine("postgresql://postgres:941025@localhost:5432/airbnb")
 Session = sessionmaker(bind=engine)
 session = Session()
@@ -32,6 +35,22 @@ class NaverTrip(Base):
 Base.metadata.create_all(engine)
 
 
+def generate_random_dates():
+    """
+    사용자 입력을 랜덤으로 받아 자동으로 수집하기 위한 함수
+
+    author : 이지은
+    updated date : 240228
+    """
+    start_date = date(2024, 3, 1)
+    end_date = date(2024, 5, 31)
+    delta = end_date - start_date
+    random_days_to_add = random.randint(0, delta.days)
+    checkin_date = start_date + timedelta(days=random_days_to_add)
+    checkout_date = checkin_date + timedelta(days=random.randint(1, 14))
+    return checkin_date, checkout_date
+
+
 def get_optionurl(checkin_date, checkout_date, adultnum, childnum):
     """
     체크인, 체크아웃, 성인(만 18세 이상), 어린이(만 18세 미만) 인원 수에 따른 숙소 정보 수집
@@ -40,7 +59,7 @@ def get_optionurl(checkin_date, checkout_date, adultnum, childnum):
     output : 숙소 정보(숙소 한국어명, 숙소 영어명, 숙소 주소, 숙소 가격)
     author : 이지은
     updated date : 240225
-    last updated : 240227
+    last updated : 240228
 
     """
     baseurl = "https://hotels.naver.com/"
@@ -49,7 +68,7 @@ def get_optionurl(checkin_date, checkout_date, adultnum, childnum):
         child_age_list = []
         for _ in range(int(childnum)):
             child_age_list.append(
-                input("Enter the age of child (below 18 years old): ")
+                str(random.randint(0, 17))  
             )
         optionurl = (
             f"{baseurl}list?placeFileName=place%3ATokyo&&adultCnt={(adultnum)}"
@@ -69,7 +88,7 @@ def get_detailurl(optionurl):
     """
     driver = webdriver.Chrome()
     driver.get(optionurl)
-    wait = WebDriverWait(driver, 30)
+    wait = WebDriverWait(driver, 20)
 
     wait.until(
         EC.visibility_of_all_elements_located(
@@ -105,9 +124,7 @@ def get_detailurl(optionurl):
     return detail_url_list
 
 
-def get_accommodation_info(
-    driver, url, checkin_date, checkout_date, adultnum, childnum
-):
+def get_accommodation_info(driver, url):
     """
     숙소 이름, 주소, 가격 수집
     """
@@ -144,48 +161,45 @@ def get_accommodation_info(
         else -1
     )
 
-    childage = None if int(childnum) == 0 else int(childnum)
-
-    return korean_name, english_name, address, price, childage
+    return korean_name, english_name, address, price
 
 
 if __name__ == "__main__":
     print("Welcome to Tokyo Accommodation Information System")
     print("===============================================")
 
-    checkin_date = input("Enter the check-in date (YYYY-MM-DD format): ")
-    checkout_date = input("Enter the check-out date (YYYY-MM-DD format): ")
-    adultnum = input("Enter the number of adults: ")
-    childnum = input("Enter the number of children: ")
-
-    optionurl = get_optionurl(checkin_date, checkout_date, adultnum, childnum)
-    detailurl = get_detailurl(optionurl)
-
+    """사용자 입력을 직접 할 때
+    # checkin_date = input("Enter the check-in date (YYYY-MM-DD format): ")
+    # checkout_date = input("Enter the check-out date (YYYY-MM-DD format): ")
+    # adultnum = input("Enter the number of adults: ")
+    # childnum = input("Enter the number of children: ")
+    """
     driver = webdriver.Chrome()
-    accommodation_list = []
+    for _ in tqdm(range(5)):
+        checkin_date, checkout_date = generate_random_dates()
+        adultnum = random.randint(1, 4)
+        childnum = random.randint(0, 3)
+        optionurl = get_optionurl(checkin_date, checkout_date, adultnum, childnum)
+        detail_urls = get_detailurl(optionurl)
 
-    for url in tqdm(detailurl):
-        accommodation_info = get_accommodation_info(
-            driver, url, checkin_date, checkout_date, adultnum, childnum
-        )
-        accommodation_list.append(accommodation_info)
-        session.add(
-            NaverTrip(
-                checkin_date=checkin_date,
-                checkout_date=checkout_date,
-                adultnum=adultnum,
-                childnum=childnum,
-                korean_name=accommodation_info[0],
-                english_name=accommodation_info[1],
-                address=accommodation_info[2],
-                price=accommodation_info[3],
-            )
-        )
+        with Session() as session:
+            for url in tqdm(detail_urls):
+                try:
+                    accommodation_info = get_accommodation_info(driver, url)
+                    session.add(
+                        NaverTrip(
+                            checkin_date=checkin_date,
+                            checkout_date=checkout_date,
+                            adultnum=adultnum,
+                            childnum=childnum,
+                            korean_name=accommodation_info[0],
+                            english_name=accommodation_info[1],
+                            address=accommodation_info[2],
+                            price=accommodation_info[3],
+                        )
+                    )
+                except Exception as e:
+                    print(f"Error fetching accommodation info for URL {url}: {e}")
+            session.commit()
 
-    session.commit()
-    session.close()
-    driver.quit()
-
-    print("\nAccommodation List:")
-    for idx, info in enumerate(accommodation_list):
-        print(f"{idx}. {info[0]} - {info[1]} - {info[2]} - {info[3]}")
+    print("\nData collection completed.")
