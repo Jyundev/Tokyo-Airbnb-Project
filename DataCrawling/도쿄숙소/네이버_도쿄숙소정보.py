@@ -3,10 +3,33 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from tqdm import tqdm
-import time
 import pandas as pd
 
-# TODO : 도쿄 여행 숙소 정보 수집
+from sqlalchemy import create_engine, Column, Integer, String, Date
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
+
+engine = create_engine("postgresql://postgres:941025@localhost:5432/airbnb")
+Session = sessionmaker(bind=engine)
+session = Session()
+Base = declarative_base()
+
+
+class NaverTrip(Base):
+    __tablename__ = "navertokyotrip"
+
+    id = Column(Integer, primary_key=True)
+    checkin_date = Column(Date)
+    checkout_date = Column(Date)
+    adultnum = Column(Integer)
+    childnum = Column(Integer)
+    korean_name = Column(String)
+    english_name = Column(String)
+    address = Column(String)
+    price = Column(Integer)
+
+
+Base.metadata.create_all(engine)
 
 
 def get_optionurl(checkin_date, checkout_date, adultnum, childnum):
@@ -17,12 +40,13 @@ def get_optionurl(checkin_date, checkout_date, adultnum, childnum):
     output : 숙소 정보(숙소 한국어명, 숙소 영어명, 숙소 주소, 숙소 가격)
     author : 이지은
     updated date : 240225
-    """
-    child_age_list = []
+    last updated : 240227
 
+    """
     baseurl = "https://hotels.naver.com/"
 
     if int(childnum) > 0:
+        child_age_list = []
         for _ in range(int(childnum)):
             child_age_list.append(
                 input("Enter the age of child (below 18 years old): ")
@@ -81,7 +105,9 @@ def get_detailurl(optionurl):
     return detail_url_list
 
 
-def get_accommodation_name(driver, url):
+def get_accommodation_info(
+    driver, url, checkin_date, checkout_date, adultnum, childnum
+):
     """
     숙소 이름, 주소, 가격 수집
     """
@@ -91,7 +117,7 @@ def get_accommodation_name(driver, url):
     korea_name_element = driver.find_element(
         By.CSS_SELECTOR, "strong.common_name__R4vrb"
     )
-    korea_name = (
+    korean_name = (
         korea_name_element.text.strip() if korea_name_element else "Name Not Found"
     )
 
@@ -103,14 +129,24 @@ def get_accommodation_name(driver, url):
     address_element = driver.find_element(
         By.CSS_SELECTOR, "ul.common_infoList__mJYps > li:nth-child(1) span"
     )
-    address = address_element.text.strip() if address_element else "Address Not Found"
+    address = (
+        address_element.text.strip().replace(", 일본  위치", "")
+        if address_element
+        else "Address Not Found"
+    )
 
     price_element = wait.until(
         EC.presence_of_element_located((By.CSS_SELECTOR, "em.common_price__l_LpX"))
     )
-    price = price_element.text.strip() if price_element else "Price Not Found"
+    price = (
+        int(price_element.text.strip().replace(",", "").replace("원", "").rstrip())
+        if price_element
+        else -1
+    )
 
-    return korea_name, english_name, address, price
+    childage = None if int(childnum) == 0 else int(childnum)
+
+    return korean_name, english_name, address, price, childage
 
 
 if __name__ == "__main__":
@@ -122,12 +158,6 @@ if __name__ == "__main__":
     adultnum = input("Enter the number of adults: ")
     childnum = input("Enter the number of children: ")
 
-    print(f"\nTravel Details:")
-    print(f"Check-in Date: {checkin_date}")
-    print(f"Check-out Date: {checkout_date}")
-    print(f"Number of Adults: {adultnum}")
-    print(f"Number of Children: {childnum}")
-
     optionurl = get_optionurl(checkin_date, checkout_date, adultnum, childnum)
     detailurl = get_detailurl(optionurl)
 
@@ -135,17 +165,27 @@ if __name__ == "__main__":
     accommodation_list = []
 
     for url in tqdm(detailurl):
-        accommodation_info = get_accommodation_name(driver, url)
+        accommodation_info = get_accommodation_info(
+            driver, url, checkin_date, checkout_date, adultnum, childnum
+        )
         accommodation_list.append(accommodation_info)
+        session.add(
+            NaverTrip(
+                checkin_date=checkin_date,
+                checkout_date=checkout_date,
+                adultnum=adultnum,
+                childnum=childnum,
+                korean_name=accommodation_info[0],
+                english_name=accommodation_info[1],
+                address=accommodation_info[2],
+                price=accommodation_info[3],
+            )
+        )
 
+    session.commit()
+    session.close()
     driver.quit()
 
     print("\nAccommodation List:")
     for idx, info in enumerate(accommodation_list):
         print(f"{idx}. {info[0]} - {info[1]} - {info[2]} - {info[3]}")
-
-    tokyo_accommodations = pd.DataFrame(
-        accommodation_list, columns=["한국어 숙소명", "영어 숙소명", "주소", "가격"]
-    )
-
-    tokyo_accommodations.to_csv("tokyo_accomodations.csv", index=False)
