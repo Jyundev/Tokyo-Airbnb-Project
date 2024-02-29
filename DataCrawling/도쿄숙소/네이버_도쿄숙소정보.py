@@ -12,7 +12,7 @@ from sqlalchemy.ext.declarative import declarative_base
 import random
 from datetime import date, timedelta
 
-engine = create_engine("postgresql://postgres:941025@localhost:5432/airbnb")
+engine = create_engine("postgresql://genie:941025@localhost:5432/airbnb")
 Session = sessionmaker(bind=engine)
 session = Session()
 Base = declarative_base()
