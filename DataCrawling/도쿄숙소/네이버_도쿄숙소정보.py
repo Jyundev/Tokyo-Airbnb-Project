@@ -40,14 +40,14 @@ def generate_random_dates():
     사용자 입력을 랜덤으로 받아 자동으로 수집하기 위한 함수
 
     author : 이지은
-    updated date : 240228
+    updated date : 240229
     """
     start_date = date(2024, 3, 1)
-    end_date = date(2024, 5, 31)
+    end_date = date(2024, 4, 30)
     delta = end_date - start_date
     random_days_to_add = random.randint(0, delta.days)
     checkin_date = start_date + timedelta(days=random_days_to_add)
-    checkout_date = checkin_date + timedelta(days=random.randint(1, 14))
+    checkout_date = checkin_date + timedelta(days=random.randint(1, 4)) 
     return checkin_date, checkout_date
 
 
@@ -175,10 +175,10 @@ if __name__ == "__main__":
     # childnum = input("Enter the number of children: ")
     """
     driver = webdriver.Chrome()
-    for _ in tqdm(range(5)):
+    for _ in tqdm(range(10)):
         checkin_date, checkout_date = generate_random_dates()
-        adultnum = random.randint(1, 4)
-        childnum = random.randint(0, 3)
+        adultnum = random.randint(1, 2)
+        childnum = random.randint(0, 2)
         optionurl = get_optionurl(checkin_date, checkout_date, adultnum, childnum)
         detail_urls = get_detailurl(optionurl)
 
