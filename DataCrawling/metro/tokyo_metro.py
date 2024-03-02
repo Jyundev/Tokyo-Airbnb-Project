@@ -1,45 +1,57 @@
-import pip
-
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-
-import requests
+import os
+import sys
+import subprocess
+import importlib
+import urllib.request
 import time
 import pickle
 
+
 # TODO : 도쿄 지하철(도쿄 메트로) 수집
 
-client_id = 'J_XnOAIntLYZe_U6aFoM'
-client_seceret = 'npkah271Cr'
+client_id = 'CLIRNT_ID'
+client_secret = 'CLIENT_SECRET'
 
 
 def install(package, upgrade=True):
     """
-    페키지 설치
-    author : 장윤영
-    updated date : 240226
-
-    """
+    Python 패키지를 설치하거나 업그레이드합니다.
     
-    if hasattr(pip, 'main'):
-        if upgrade:
-            pip.main(['install', '--upgrade', package])
-        else:
-            pip.main(['install', package])
-    else:
-        if upgrade:
-            pip._internal.main(['install', '--upgrade', package])
-        else:
-            pip._internal.main(['install', package])
-
-        # import package
+    매개변수:
+    - package (str): 설치 또는 업그레이드할 패키지의 이름.
+    - upgrade (bool): 이미 설치된 패키지를 업그레이드할지 여부. 기본값은 True입니다.
+    
+        작성자: 장윤영
+        업데이트 날짜: 240302
+    """
+    try:
+        # 이미 설치된 패키지인지 확인
+        importlib.import_module(package)
+        print(f"{package} 패키지는 이미 설치되어 있습니다. 업그레이드 여부에 따라 패키지를 업그레이드하거나 넘어갑니다.")
+    except ModuleNotFoundError:
         try:
-            eval(f"import {package}")
-        except ModuleNotFoundError:
-            print("# Package name might be differnt. please check it again.")
+            # pip 명령어 구성
+            command = [sys.executable, '-m', 'pip', 'install', package]
+            if upgrade:
+                command.append('--upgrade')
+            
+            # pip 명령어 실행
+            subprocess.check_call(command)
+            
+            # 설치된 패키지 임포트 시도
+            importlib.import_module(package)
+            print(f"{package} 패키지가 성공적으로 설치되었습니다.")
+        except subprocess.CalledProcessError:
+            print(f"패키지 설치 중 오류 발생: {package}. 패키지 이름과 인터넷 연결을 확인해주세요.")
         except Exception as e:
-            print(e)
+            print(f"예상치 못한 오류가 발생했습니다: {e}")
+
+
+install("selenium")
+
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
 
 def load_page(url):
     """
@@ -124,62 +136,55 @@ def open_dict(file_name):
     return dictionary
 
 
-def papago_translate(text):
+def papago_translate(text, client_id, client_secret):
     """
     PAPAGO API 이용 영어 노선도 한국어로 번역
 
     input : taget(지하철 역),  client_id, client_seceret
     output : 한국어 노선도
     author :장윤영
-    updated date : 240225
+    updated date : 240302
 
+    ERROR : urllib.error.HTTPError: HTTP Error 404: Not Found
 
     """
-    
-    global client_id
-    global client_seceret
 
-    a = "error"
-    b = "error"
-    if text.encode().isalpha():
-        text_lng = "en"
-        target_lng = "ko"
-    else:
-        text_lng = "ko"
-        target_lng = "en"
-    data = {"text": text, "source": text_lng, "target": target_lng}
+    text_lng = "en"
+    target_lng = "ko"
+
+    data = f"source={text_lng}&target={target_lng}&text=" + text
 
     url = "https://openapi.naver.com/v1/papago/n2mt"
 
-    header = {"X-Naver-Client-Id": client_id, "X-Naver-Client-Secret": client_seceret}
 
-    response = requests.post(url, headers=header, data=data)
-    rescode = response.status_code
+    request = urllib.request.Request(url)
+    request.add_header("X-Naver-Client-Id",client_id)
+    request.add_header("X-Naver-Client-Secret",client_secret)
+    response = urllib.request.urlopen(request, data=data.encode("utf-8"))
+    rescode = response.getcode()
 
-    if rescode == 200:
-        t_data = response.json()
-        return response.json()["message"]["result"]["translatedText"]
+    if(rescode==200):
+        response_body = response.read()
+        print(response_body.decode('utf-8'))
     else:
-        print("Error Code:", rescode)
-        return 0
+        print("Error Code:" + rescode)
 
 
-def translate_kr(data):
+def translate_kr(data, file_name):
     for key, value in data.items():
         tokyo_kr_list = list(
             map(
                 lambda line: papago_translate(
-                    line.replace("-", ""), client_id, client_seceret
+                    line.replace("-", ""), client_id, client_secret
                 ),
                 value,
             )
         )
         data[key] = tokyo_kr_list
 
-    save_dict(data, "DataCrawling/OshimaLand/line_detail_kr.pkl")
+    save_dict(data, file_name)
 
 if __name__ == "__main__":
-    install("selenium")
     install("requests")
 
     url = "https://www.tokyometro.jp/en/subwaymap/index.html"
