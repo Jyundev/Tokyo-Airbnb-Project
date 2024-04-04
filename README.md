@@ -30,7 +30,7 @@
 
 ## Contents Table
 
-- [ 📑 프로젝트 개요](#📑-프로젝트-개요)
+- [ 📑 프로젝트 개요](#프로젝트-개요)
 - [📆 프로젝트 목표](#📆-프로젝트-목표)
 - [🛎️ 기대 효과](#🛎️-기대-효과)
 - [✒️ 프로젝트 설명](#✒️-프로젝트-설명)
@@ -39,7 +39,7 @@
 </br></br>
 
 
-## 📑 프로젝트 개요 
+## 프로젝트 개요 
 
 <div align="center" style="display: flex; justify-content: center; text-align: center;">
   <img src="img/news.png" alt="Alt text" style="width: 90%; margin: 5px;">
