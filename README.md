@@ -20,7 +20,7 @@
 
 </br>
 
-| Stack | Tools | Collaboration |
+| 🚀 Stack | 🛠 Tools | 👥 Collaboration |
 |-------|-------|---------------|
 | <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSHLN0RrPTmNUSMhl6MTeX0p_uIIj6Qzoxok9gjmzjELFRCeJaN34K8nOSaG56rrrw-evQ&usqp=CAU" alt="Python" width="40px"> Python | <img src="https://git-scm.com/images/logos/downloads/Git-Icon-1788C.png" alt="Git" width="40px"> Git<br><br><img src="https://logowik.com/content/uploads/images/google-colaboratory6512.jpg" alt="Colab" width="40px"> Colab | <img src="https://cdn-icons-png.flaticon.com/512/25/25231.png" alt="GitHub" width="40px"> GitHub<br><img src="https://cdn.icon-icons.com/icons2/2389/PNG/512/notion_logo_icon_145025.png" alt="Notion" width="40px"> Notion<br><img src="https://cdn-icons-png.flaticon.com/512/2111/2111615.png" alt="Slack" width="40px"> Slack |
 
@@ -31,11 +31,10 @@
 ## Contents Table
 
 - [프로젝트 개요](#📑-프로젝트-개요)
+- [프로젝트 목표](#📆-프로젝트-목표)
 - [기대 효과](#🛎️-기대-효과)
 - [프로젝트 설명](#✒️-프로젝트-설명)
-- [모델 설명](#✒️-모델-설명)
 - [Dataset](#📁-dataset)
-- [Reference](#📌-reference)
 
 </br></br>
 
@@ -90,6 +89,6 @@
 
 | Title | link |
 | --- | --- |
-| Airbnb| <a href = http://insideairbnb.com/get-the-data>에어비앤비 도쿄 데이터</a> |
+| Airbnb Dataset|  <a href = http://insideairbnb.com/get-the-data>에어비앤비 도쿄 데이터</a> |
 | 도쿄 부동산 사건 데이터  | <a href = http://www.oshimaland.co.jp>오시마랜드</a>|
 | 도쿄 공공 데이터 |<a href = http://www.oshimaland.co.jp>절도 데이터 </a> |
