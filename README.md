@@ -31,10 +31,10 @@
 ## Contents Table
 
 - [ 📑 프로젝트 개요](#프로젝트-개요)
-- [📆 프로젝트 목표](#📆-프로젝트-목표)
-- [🛎️ 기대 효과](#🛎️-기대-효과)
-- [✒️ 프로젝트 설명](#✒️-프로젝트-설명)
-- [📁 Dataset](#📁-dataset)
+- [📆 프로젝트 목표](#프로젝트-목표)
+- [🛎️ 기대 효과](#기대-효과)
+- [✒️ 프로젝트 설명](#프로젝트-설명)
+- [📁 Dataset](#dataset)
 
 </br></br>
 
@@ -57,7 +57,7 @@
 
 </br></br>
 
-## 📆 프로젝트 목표 
+## 프로젝트 목표 
 
 | 기간 | 목표 |
 | --- | --- |
@@ -67,7 +67,7 @@
 
 </br></br>
 
-## 🛎️ 기대 효과
+## 기대 효과
 - 각 지역에 대한 치안 등급을 부여
     > 치안 데이터를 활용하여 각 지역의 상대적인 안전 수준을 판단합니다
 - 안전 숙소 제안 
@@ -77,7 +77,7 @@
 
 </br></br>
 
-## ✒️  프로젝트 설명
+## 프로젝트 설명
 
 <div align="center" style="display: flex; justify-content: center; text-align: center;">
   <img src="img/flow.png" alt="Alt text" style="width: 90%; margin: 5px;">
@@ -85,7 +85,7 @@
 
 </br></br>
 
-## 📁 Dataset
+## Dataset
 
 | Title | link |
 | --- | --- |
